@@ -105,9 +105,16 @@ return [
     */
 
     'attributes' => [
+
+        //Auth & register
         'name' => '昵称',
         'email' => '邮箱',
         'password' => '密码',
+
+        //Team Create
+        "team_name" => "团队名称",
+        "team_icon" => "团队图标",
+        "team_intro" => "团队介绍",
     ],
 
 ];

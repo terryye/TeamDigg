@@ -24,7 +24,7 @@
                 <div class="form-group">
                     <label for="team_name" class="col-sm-2 control-label">团队名称</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="team_name" value="">
+                        <input type="text" class="form-control" name="team_name" value="{{old('team_name')}}">
                     </div>
                 </div>
                 <div class="form-group">
@@ -37,15 +37,30 @@
                 <div class="form-group">
                     <label for="team_intro" class="col-sm-2 control-label">团队介绍</label>
                     <div class="col-sm-10">
-                        <textarea id="team_intro" class="form-control" rows="3"></textarea>
+                        <textarea name="team_intro" class="form-control" rows="3">{{old('team_intro')}}</textarea>
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                        <button type="submit" class="btn btn-default">提交，并添加订阅源</button>
+                        <button type="submit" class="btn btn-default" onclick="this.disabled=true;this.innerHTML='正在创建，请稍等。';this.form.submit();;">提交，并添加订阅源</button>
                     </div>
                 </div>
             {!! Form::close() !!}
+
+
+            @if (count($errors) > 0)
+                <div class="alert alert-danger">
+                    <strong>填入
+                        信息有误,请检查</strong><br><br>
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+
+                    </ul>
+                </div>
+            @endif
+
         </div>
     </div>
 </div>

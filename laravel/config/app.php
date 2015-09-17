@@ -144,6 +144,7 @@ return [
         Illuminate\Html\HtmlServiceProvider::class,
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
         App\Providers\ViewComposerServiceProvider::class,
+        'Intervention\Image\ImageServiceProvider',
 
 
         /*
@@ -204,6 +205,7 @@ return [
         'View'      => Illuminate\Support\Facades\View::class,
         'Form'      => Illuminate\Html\FormFacade::class,
         'HTML'      => Illuminate\Html\HtmlFacade::class,
+        'Image'     => 'Intervention\Image\Facades\Image'
 
     ],
 

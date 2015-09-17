@@ -10,6 +10,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
+use Intervention\Image\Facades\Image;
 
 class TeamController extends Controller
 {
@@ -25,6 +26,12 @@ class TeamController extends Controller
         return view("manage.home");
     }
 
+    public function validator(Request $request){
+        $this->validate($request, [
+            'team_name' => 'required|max:60',
+            'team_icon' => 'image|max:500',
+        ]);
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -44,34 +51,35 @@ class TeamController extends Controller
      */
     public function store(Team $team, Request $request)
     {
-        //入库基本资料，
+        //验证
+        $this->validator($request);
+
+        //入库基本资料s
         $result = $team->create($request->all());
+
+        //入库图标
         $team_id = $result['id'];
+        if($request->hasFile("team_icon")){
+            $this->saveTeamIcon($team_id);
+        }
 
-        $this->saveTeamIcon($team_id);
-
-
-
+        //feeds页面
+        return redirect(route("manage.team.subscribe",['team_id'=>$team_id]));
     }
 
     private function saveTeamIcon ($team_id){
 
-        $icon_name = $team_id;
         $tmp_file = Input::file("team_icon");
         $tmp_file_name = $tmp_file->getPathname();
         $ext = $tmp_file->guessClientExtension();
+        $icon_name = $team_id .".png";
 
         if(in_array($ext,["png","jpg","gif","jpeg"])){
-            $url = Storage::upload("team_icon", $icon_name .".".$ext,  $tmp_file_name);
-        }else{
-
+            $imgdata = Image::make($tmp_file_name)->fit(200)->encode("png");
+            //$url = Storage::upload("team_icon", $icon_name,  $tmp_file_name);
+            Storage::write("team_icon" , $icon_name ,$imgdata);
         }
-
-        dd($url);
-
-
-        //存储图标
-        //
+        return ;
     }
     /**
      * Display the specified resource.

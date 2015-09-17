@@ -84,5 +84,6 @@ Route::group(['middleware' => 'auth'], function()
     Route::get('manage/home', [ 'uses' => 'Manage\TeamController@index','as' => 'manage.home']);
     Route::get('manage/team/create', [ 'uses' => 'Manage\TeamController@create','as' => 'manage.team.create']);
     Route::post('manage/team/create', [ 'uses' => 'Manage\TeamController@store','as' => 'manage.team.store']);
+    Route::get('manage/team/subscribe', [ 'uses' => 'Manage\TeamController@store','as' => 'manage.team.subscribe']);
 
 });

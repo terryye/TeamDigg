@@ -18,22 +18,26 @@ class CreateTeamsTable extends Migration
             $table->string('team_name', 60);
             $table->string('team_intro');
             $table->timestamps();
+
         });
 
 
         Schema::create('team_user', function(Blueprint $table)
         {
             $table->integer('user_id')->unsigned()->index();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->integer('user_type')->unsigned();
-
             $table->integer('team_id')->unsigned()->index();
-            $table->foreign('team_id')->references('team_id')->on('teams')->onDelete('cascade');
-
             $table->timestamps();
-
             $table->unique(['user_id', 'team_id']);
+        });
 
+        //create foreign key constrain
+        Schema::table('teams', function (Blueprint $table) {
+            $table->foreign('team_id','teams_2_users')->references('team_id')->on('team_user')->onDelete('cascade');
+        });
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->foreign('id','users_2_teams')->references('user_id')->on('team_user')->onDelete('cascade');
         });
     }
 
@@ -44,7 +48,15 @@ class CreateTeamsTable extends Migration
      */
     public function down()
     {
-        //
+        Schema::table('teams', function (Blueprint $table) {
+            $table->dropForeign('teams_2_users');
+        });
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropForeign('users_2_teams');
+        });
+
+
         Schema::drop("teams");//
         Schema::drop("team_user");
     }
