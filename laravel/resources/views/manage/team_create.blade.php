@@ -12,6 +12,7 @@
         <a href="#" class="list-group-item">成员</a>
     </div>
 </div>
+
 <div class="col-md-7">
     <ol class="breadcrumb">
         <li><a href="{{route('manage.home')}}">返回 团队列表</a></li>
@@ -19,7 +20,7 @@
     </ol>
     <div class="panel panel-default panel-team">
         <div class="panel-body">
-            <form class="form-horizontal">
+            {!!  Form::open(['route' => 'manage.team.store',"class"=>'form-horizontal', "files"=> true])  !!}
                 <div class="form-group">
                     <label for="team_name" class="col-sm-2 control-label">团队名称</label>
                     <div class="col-sm-10">
@@ -44,7 +45,7 @@
                         <button type="submit" class="btn btn-default">提交，并添加订阅源</button>
                     </div>
                 </div>
-            </form>
+            {!! Form::close() !!}
         </div>
     </div>
 </div>
