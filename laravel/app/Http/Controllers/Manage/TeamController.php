@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Manage;
 
 use App\Libs\Storage;
 use App\Team;
+use Barryvdh\Debugbar;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -54,7 +55,7 @@ class TeamController extends Controller
         //验证
         $this->validator($request);
 
-        //入库基本资料s
+        //入库基本资料
         $result = $team->create($request->all());
 
         //入库图标
@@ -64,7 +65,9 @@ class TeamController extends Controller
         }
 
         //feeds页面
-        return redirect(route("manage.team.subscribe",['team_id'=>$team_id]));
+        $url = route("manage.team.subscribe",['team_id'=>$team_id]);
+        return redirect($url);
+
     }
 
     private function saveTeamIcon ($team_id){
@@ -75,11 +78,15 @@ class TeamController extends Controller
         $icon_name = $team_id .".png";
 
         if(in_array($ext,["png","jpg","gif","jpeg"])){
-            $imgdata = Image::make($tmp_file_name)->fit(200)->encode("png");
+            $img_data = Image::make($tmp_file_name)->fit(200)->encode("png");
             //$url = Storage::upload("team_icon", $icon_name,  $tmp_file_name);
-            Storage::write("team_icon" , $icon_name ,$imgdata);
+            Storage::write("team_icon" , $icon_name ,$img_data);
         }
         return ;
+    }
+
+    public function subscribe(){
+        return "under construction";
     }
     /**
      * Display the specified resource.
@@ -95,12 +102,15 @@ class TeamController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  Team  $team
      * @return Response
      */
-    public function edit($id)
+    public function edit(Team $team)
     {
-        //
+    //    $team->toArray();
+        Debugbar::info($team);
+
+        return view("manage.team_edit",compact($team));
     }
 
     /**
@@ -113,6 +123,7 @@ class TeamController extends Controller
     public function update(Request $request, $id)
     {
         //
+
     }
 
     /**

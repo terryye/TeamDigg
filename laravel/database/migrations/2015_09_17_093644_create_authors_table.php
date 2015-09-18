@@ -42,13 +42,10 @@ class CreateAuthorsTable extends Migration
             $table->integer('user_id')->unsigned();
             $table->unique(['author_id','team_id']);
             $table->timestamps();
-        });
-        Schema::table('authors', function (Blueprint $table){
-            $table->foreign("author_id","authors_2_teams")->references('author_id')->on("author_team")->onDelete('cascade');
-        });
 
-        Schema::table('teams', function (Blueprint $table){
-            $table->foreign("team_id","teams_2_authors")->references('team_id')->on("author_team")->onDelete('cascade');
+            $table->foreign("author_id")->references('author_id')->on("authors")->onDelete('cascade');
+            $table->foreign("team_id")->references('team_id')->on("teams")->onDelete('cascade');
+
         });
 
     }
@@ -61,16 +58,13 @@ class CreateAuthorsTable extends Migration
     public function down()
     {
 
-        Schema::table('authors', function (Blueprint $table){
-            $table->dropForeign("authors_2_teams");
+        Schema::table('author_team', function (Blueprint $table){
+            $table->dropForeign(["author_id"]);
+            $table->dropForeign(["team_id"]);
         });
 
-        Schema::table('teams', function (Blueprint $table){
-            $table->dropForeign("teams_2_authors");
-        });
 
         Schema::drop("authors");
-
         Schema::drop("author_team");
     }
 }

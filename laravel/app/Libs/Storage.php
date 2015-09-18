@@ -19,6 +19,10 @@ class Storage {
         return "http://localhost/web/teamdigg/2/laravel/storage/$domain/";
     }
 
+    public static function getUrl($domain, $name){
+        return self::_getBaseUrl($domain) . $name;
+    }
+
     public static function saveUrl($domain, $destFileName, $url, $refer = null, $cookie = null){
         if($refer === null){
             $refer = $url;
