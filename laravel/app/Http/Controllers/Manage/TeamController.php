@@ -6,7 +6,6 @@ use App\Libs\Storage;
 use App\Role;
 use App\Team;
 use Barryvdh\Debugbar;
-use DB;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -78,7 +77,7 @@ class TeamController extends Controller
      * @param  Request $request
      * @return Response
      */
-    public function store(Team $team, Request $request)
+    public function store(Request $request)
     {
         //验证
         $this->validator($request);
@@ -119,6 +118,38 @@ class TeamController extends Controller
         return;
     }
 
+    public function member($team_id, Request $request)
+    {
+        $nick = $request->input('nick');
+
+
+        $team = Team::find($team_id);
+
+        $teamModel = $team->users();
+        if ($nick) {
+            $teamModel->where("name", 'like', "%$nick%");
+        }
+
+
+        $team_users = $teamModel
+            ->orderBy('pivot_user_role', 'asc')
+            ->orderBy('pivot_updated_at', 'desc')
+            ->paginate(15);
+        if ($nick) {
+            $team_users->appends('nick', $nick);
+        }
+
+        //$team_users->setPath('custom/url');
+
+        $role_map = Role::getRoleMap();
+        return view("manage.team_member",
+            compact('team',
+                "team_users",
+                'role_map',
+                'nick')
+        );
+    }
+
     public function subscribe()
     {
         return "under construction";
@@ -139,7 +170,6 @@ class TeamController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param $team_id
-     * @param  Team $team
      *
      * @return Response
      */
@@ -151,7 +181,7 @@ class TeamController extends Controller
         $role = $team->currentUserRole();
 
         //有展示的权限即可查看编辑页面。在保存时会检查是否有更新的权限
-        if(!Role::checkPrivilege($role, Role::PRIV_VIEW)){
+        if (!Role::checkPrivilege($role, Role::PRIV_VIEW)) {
             abort(403, "你不是团队的成员，没有查看的权限");
         }
 
@@ -159,38 +189,40 @@ class TeamController extends Controller
         $manager = Role::checkPrivilege($role, Role::PRIV_UPDATE);
         $disabled = $manager ? "" : "disabled";
 
-        if(!$manager){
+        if (!$manager) {
             view()->share('info', "您没有修改当前团队资料的权限。");
         }
 
         return view("manage.team_edit", compact("team", 'disabled'));
     }
 
+    /*
+        private function _authTeamManagerByTeamId($team_id)
+        {
+            use DB;
 
-/*
-    private function _authTeamManagerByTeamId($team_id)
-    {
-        $uid = Auth::user()->id;
-        $team = new Team();
-        $team_tbname = $team->getTable();
-        $pivot_tbname = $team->users()->getTable();
+            $uid = Auth::user()->id;
+            $team = new Team();
+            $team_tbname = $team->getTable();
+            $pivot_tbname = $team->users()->getTable();
 
-        $results = DB::selectOne("select team_user.user_role from $pivot_tbname as team_user
-                                      left join $team_tbname as teams
-                                        on teams.team_id = team_user.team_id
-                                        where team_user.user_id = ?", [$uid]);
+            $results = DB::selectOne("select team_user.user_role from $pivot_tbname as team_user
+                                          left join $team_tbname as teams
+                                            on teams.team_id = team_user.team_id
+                                            where team_user.user_id = ?", [$uid]);
 
-        if (isset($results->user_role)
-            && in_array($results->user_role,
-                [Role::TEAM_FOUNDER, Role::MANAGER]
-            )
-        ) {
-            return true;
+            if (isset($results->user_role)
+                && in_array($results->user_role,
+                    [Role::TEAM_FOUNDER, Role::MANAGER]
+                )
+            ) {
+                return true;
+            }
+
+            abort(403, "你不是团队的管理员，没有修改的权限");
         }
+    */
 
-        abort(403, "你不是团队的管理员，没有修改的权限");
-    }
-*/
     private function _checkMaxCreate()
     {
         $teamCount = Auth::user()->teams()->count();
@@ -201,9 +233,8 @@ class TeamController extends Controller
 
     /**
      * Update the specified resource in storage.
-     *
+     * @param  int $team_id
      * @param  Request $request
-     * @param  int $id
      * @return Response
      */
     public function update($team_id, Request $request)
@@ -215,7 +246,7 @@ class TeamController extends Controller
 
         $team = Team::find($team_id);
 
-        if (!$team->checkCurrentUsePrivilege(Role::PRIV_UPDATE) ) {
+        if (!$team->checkCurrentUsePrivilege(Role::PRIV_UPDATE)) {
             abort(403, "您没有修改该团队的权限。");
         }
 

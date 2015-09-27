@@ -16,7 +16,9 @@ class ViewComposerServiceProvider extends ServiceProvider
     public function boot()
     {
         //
-        $this->composeMainLayout();
+        $this->_composeMainLayout();
+
+        $this->_composeManageTeamLayout();
     }
 
     /**
@@ -29,7 +31,7 @@ class ViewComposerServiceProvider extends ServiceProvider
         //
     }
 
-    private function composeMainLayout(){
+    private function _composeMainLayout(){
 
         view()->composer('layouts.main', function($view)
         {
@@ -43,4 +45,19 @@ class ViewComposerServiceProvider extends ServiceProvider
         });
 
     }
+
+    private function _composeManageTeamLayout(){
+
+        view()->composer('layouts.manage_team', function($view)
+        {
+            $routename = Route::currentRouteName();
+            $team_id = Route::input("team_id");
+
+            $view->with('team_id', $team_id);
+            $view->with('routename', $routename);
+        });
+
+
+    }
+
 }

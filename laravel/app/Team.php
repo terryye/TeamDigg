@@ -46,11 +46,11 @@ class Team extends Model
     /**
      * An team is owned by a user.
      *
-     * @return \Illuminate\Datebase\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function users()
     {
-        return $this->belongsToMany('App\User')->withPivot("user_role");
+        return $this->belongsToMany('App\User')->withPivot("user_role","updated_at");
     }
 
     public function currentUserRole(){
@@ -68,6 +68,10 @@ class Team extends Model
     public function checkCurrentUsePrivilege($privilegeId){
         $role_id = $this->currentUserRole();
         return Role::checkPrivilege($role_id, $privilegeId);
+    }
+
+    public function attach($userID, $roleID){
+        $this->users()->withTimestamps()->attach($userID,['user_role'=>$roleID]);
     }
 
 

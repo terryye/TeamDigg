@@ -23,6 +23,10 @@ team.css
             height: 20px;
         }
 
+        .panel-member .member-icon{
+            width: 20px;
+            height: 20px;
+        }
 /*
 common.css
 */
