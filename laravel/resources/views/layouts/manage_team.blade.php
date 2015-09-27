@@ -18,7 +18,11 @@
         <div class="panel panel-default panel-team">
             <div class="panel-body">
                 @yield('form')
-
+                @if (isset($info))
+                    <div class="alert alert-info">
+                          {{ $info }}
+                    </div>
+                @endif
                 @if (count($errors) > 0)
                     <div class="alert alert-danger">
                         <strong>填入

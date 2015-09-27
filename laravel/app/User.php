@@ -14,6 +14,11 @@ class User extends Model implements AuthenticatableContract,
                                     AuthorizableContract,
                                     CanResetPasswordContract
 {
+
+
+
+
+
     use Authenticatable, Authorizable, CanResetPassword;
 
     /**
@@ -39,6 +44,6 @@ class User extends Model implements AuthenticatableContract,
 
     public function teams()
     {
-        return $this->hasMany('App\Team');
+        return $this->belongsToMany('App\Team')->withPivot("user_role");
     }
 }
