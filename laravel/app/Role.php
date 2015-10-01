@@ -9,14 +9,14 @@ class Role {
     const  TEAM_MANAGER = 10020;  //管理员  解散团队以外的所有权限
     const  TEAM_MEMBER  = 10030;  //会员    可以分享内容，订阅内容。
     const  TEAM_FOLLOWER  = 10040;  //追随者  只能够查看其他人分享的内容
-
-
+    const  TEAM_BLACK  = 10050;  //黑名单  只能够查看其他人分享的内容
 
     const PRIV_VIEW = 11000;
     const PRIV_UPDATE = 11002;
     const PRIV_REMOVE = 11003;
     const PRIV_SUBSCRIBE = 11004;
-
+    const PRIV_SET_MANAGER = 11004;
+    const PRIV_MANAGE_MEMBER = 11004;
 
     public static function checkPrivilege($roleId, $privilegeId){
         $privMap = [
@@ -61,7 +61,9 @@ class Role {
 
             self::TEAM_MEMBER => '会员',
 
-            self::TEAM_FOLLOWER => '追随者',
+            self::TEAM_FOLLOWER => '收听者',
+
+            self::TEAM_BLACK => '黑名单'
         ];
 
         return $roleMap;

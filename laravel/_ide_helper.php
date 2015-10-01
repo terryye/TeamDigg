@@ -1,7 +1,7 @@
 <?php
 /**
  * A helper file for Laravel 5, to provide autocomplete information to your IDE
- * Generated for Laravel 5.1.16 (LTS) on 2015-09-14.
+ * Generated for Laravel 5.1.17 (LTS) on 2015-09-20.
  *
  * @author Barry vd. Heuvel <barryvdh@gmail.com>
  * @see https://github.com/barryvdh/laravel-ide-helper
@@ -7645,6 +7645,17 @@ namespace {
 
 
     class Queue extends \Illuminate\Support\Facades\Queue{
+        
+        /**
+         * Register an event listener for the after job event.
+         *
+         * @param mixed $callback
+         * @return void 
+         * @static 
+         */
+        public static function after($callback){
+            \Illuminate\Queue\QueueManager::after($callback);
+        }
         
         /**
          * Register an event listener for the daemon queue loop.

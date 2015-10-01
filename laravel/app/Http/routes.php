@@ -88,6 +88,10 @@ Route::group(['middleware' => 'auth'], function()
 
 
     Route::get('manage/team/member/{team_id}', [ 'uses' => 'Manage\TeamController@member','as' => 'manage.team.member']);
+
+    Route::post('manage/team/role/{team_id}', [ 'uses' => 'Manage\TeamController@changeRole','as' => 'manage.team.role']);
+
+
     Route::post('manage/team/member/{team_id}', [ 'uses' => 'Manage\TeamController@member','as' => 'manage.team.member']);
 
     Route::get('manage/team/subscribe/{team_id}', [ 'uses' => 'Manage\TeamController@subscribe','as' => 'manage.team.subscribe']);

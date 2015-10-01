@@ -42,6 +42,7 @@ class TeamController extends Controller
         $managers = isset($teams[Role::TEAM_MANAGER]) ? $teams[Role::TEAM_MANAGER] : null;
         $members = isset($teams[Role::TEAM_MEMBER]) ? $teams[Role::TEAM_MEMBER] : null;
         $followers = isset($teams[Role::TEAM_FOLLOWER]) ? $teams[Role::TEAM_FOLLOWER] : null;
+
         return view("manage.home",
             compact("creaters", 'managers', 'members', 'followers'));
 
@@ -141,11 +142,21 @@ class TeamController extends Controller
 
         //$team_users->setPath('custom/url');
 
+
         $role_map = Role::getRoleMap();
+
+        $role_change = Role::getRoleMap();
+        unset(
+            $role_change[Role::TEAM_FOUNDER],
+            $role_change[Role::TEAM_GUEST]
+        );
+
+
         return view("manage.team_member",
             compact('team',
                 "team_users",
                 'role_map',
+                'role_change',
                 'nick')
         );
     }
@@ -252,6 +263,8 @@ class TeamController extends Controller
 
         $team->update($request->all());
 
+
+
         //入库图标
         if ($request->hasFile("team_icon")) {
             $this->_saveTeamIcon($team_id);
@@ -259,6 +272,31 @@ class TeamController extends Controller
 
         $url = route("manage.home");
         return redirect($url);
+    }
+
+    /**
+     * change member's role
+     *
+     * @param $team_id
+     * @param $user_id
+     * @param $role_id
+     *
+     * @return Response
+     */
+    public function changeRole($team_id, $user_id, $role_id){
+
+        $team = Team::find($team_id);
+
+        $current_role_id = $team->currentUserRole();
+
+        //只有创始人能添加管理员
+ 
+
+        //只有创始人和管理员能设置角色或删除成员
+        if (!$team->checkCurrentUsePrivilege(Role::PRIV_UPDATE)) {
+            abort(403, "您没有修改该团队的权限。");
+        }
+
     }
 
     /**
