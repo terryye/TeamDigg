@@ -36,6 +36,8 @@ class Team extends Model
         'team_intro'
     ];
 
+    public $max_manager = 3;
+
     /**
      * Additional fields to treat as Carbon instances.
      *

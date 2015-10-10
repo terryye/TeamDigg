@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Intervention\Image\Facades\Image;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class TeamController extends Controller
 {
@@ -264,7 +265,6 @@ class TeamController extends Controller
         $team->update($request->all());
 
 
-
         //入库图标
         if ($request->hasFile("team_icon")) {
             $this->_saveTeamIcon($team_id);
@@ -277,25 +277,62 @@ class TeamController extends Controller
     /**
      * change member's role
      *
+     * @param Request $request
      * @param $team_id
-     * @param $user_id
-     * @param $role_id
-     *
      * @return Response
+     *
+     * @internal param $user_id
+     * @internal param $role_id
+     *
      */
-    public function changeRole($team_id, $user_id, $role_id){
+    public function changeRole(Request $request, $team_id)
+    {
+
+        $user_id = $request->input("user_id");
+        $role_id = $request->input("role_id");
 
         $team = Team::find($team_id);
-
         $current_role_id = $team->currentUserRole();
+        try{
+            if ($role_id == Role::TEAM_MANAGER) {
+                //只有创始人能添加管理员
+                if ($current_role_id !== Role::TEAM_FOUNDER)
+                {
+                    abort(403, "只有创始人才能为团队添加管理员");
+                }
 
-        //只有创始人能添加管理员
- 
+                //管理员总数不能超过10个
+                $count_manager = $team->users()->wherePivot("user_role", "=", Role::TEAM_MANAGER)->count();
 
-        //只有创始人和管理员能设置角色或删除成员
-        if (!$team->checkCurrentUsePrivilege(Role::PRIV_UPDATE)) {
-            abort(403, "您没有修改该团队的权限。");
+
+                if($count_manager > $team->max_manager){
+                    abort(403, "当前团队只能添加 {$team->max_manager} 个管理员");
+                }
+            }
+
+            //只有创始人和管理员能设置角色或删除成员
+            if (!$team->checkCurrentUsePrivilege(Role::PRIV_UPDATE)) {
+                abort(403, "您没有修改该团队的权限。");
+            }
+
+
+            //条件判断完成，修改入库
+            $team->users()->updateExistingPivot($user_id, array('user_role'=>$role_id));
+        } catch (HttpException $e){
+
+            return response()->json(
+                ['code' => $e->getStatusCode(),
+                'msg' => $e->getMessage(),
+                'user_id' => $user_id,
+                'role_id' => $role_id
+            ]);
         }
+
+        return response()->json(['code' => 0,
+                                'msg' => '修改成功',
+                                'user_id' => $user_id,
+                                'role_id' => $role_id
+                                ]);
 
     }
 

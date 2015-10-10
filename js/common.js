@@ -4,7 +4,11 @@
 // JavaScript Document
 var CGI = {
     request:function (type, url, pars, callback) {
-
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
         $.ajax({
             url: url,
             dataType : "json",
@@ -26,35 +30,19 @@ var CGI = {
                 MSG.alert("请求出错，请稍后再试 ：）");
             }
         });
-
     },
 
-    get : function(ctl,action,pars,callback){
-        var url = this.url(ctl,action, pars,"get")
+    get : function(url, callback){
         this.request('GET', url, callback );
     },
-    post : function(ctl,action,pars,callback){
-        var url = this.url(ctl,action,{},"post");
+
+    post : function(url,pars,callback){
         this.request('POST', url, pars, callback);
-    },
-    url : function(ctl,action,pars,method){
-        var r = [];
-        pars = pars || {};
-        method = method || 'get';
-        action = action || '';
-        pars._ = (new Date).getTime();
-
-        if(method == "get"){
-            //pars._c_ = "?";
-            for (var k in pars) {
-                r.push(k + "=" + pars[k]);
-            }
-        }
-
-        var url = "./cgi/index.php?_pathinfo_="+ctl+"/"+action+"&"+r.join('&');
-        return url;
     }
+
 };
+
+
 //URL相关函数
 var URL = {
     _v : function(_name,_string){
@@ -81,25 +69,25 @@ var MSG = {
             (function (_obj,_cbafershow) {
 
                 /*
-                var d = dialog({
-                    title: '消息',
-                    content: '风吹起的青色衣衫，夕阳里的温暖容颜，你比以前更加美丽，像盛开的花<br>——许巍《难忘的一天》',
-                    okValue: '确 定',
-                    ok: function () {
-                        var that = this;
-                        setTimeout(function () {
-                            that.title('提交中..');
-                        }, 2000);
-                        return false;
-                    },
-                    cancelValue: '取消',
-                    cancel: function () {}
-                });
-                */
-
+                 var d = dialog({
+                 title: '消息',
+                 content: '风吹起的青色衣衫，夕阳里的温暖容颜，你比以前更加美丽，像盛开的花<br>——许巍《难忘的一天》',
+                 okValue: '确 定',
+                 ok: function () {
+                 var that = this;
+                 setTimeout(function () {
+                 that.title('提交中..');
+                 }, 2000);
+                 return false;
+                 },
+                 cancelValue: '取消',
+                 cancel: function () {}
+                 });
+                 */
                 var d = dialog(_obj);
                 d.show();
                 _cbafershow(d);
+
             })(obj, cbaftershow);
         });
 
@@ -131,56 +119,3 @@ var MSG = {
         });
     }
 };
-
-var FORM = {
-    //提示输入错误
-    dealInputError : function(data){
-        //先简单处理，仅提示第一个错误
-        for(var k in data){
-            MSG.alert(data[k]);
-            break;
-        }
-
-    }
-}
-/*
-var TPL = {
-    toHtml : function(template, data){
-        var bt = baidu.template;
-        bt.LEFT_DELIMITER='<?';
-        bt.RIGHT_DELIMITER='?>';
-        bt.ESCAPE = false;
-        return bt(template, data);
-    },
-    _cache:{},
-    _getTplObj:function (name) {
-        var domname = "using_" + name;
-        if (!this._cache[name]) {
-            var tplname = "tpl_" + name;
-            this._cache[name] = {
-                tpl:$("#" + tplname).html()
-            }
-        }
-        return {
-            dom : $("#" + domname),
-            tpl : this._cache[name].tpl
-        }
-    },
-    render:function (name, data) {
-        var tplObj = this._getTplObj(name);
-        var html = this.toHtml(tplObj.tpl, data);
-        tplObj.dom.html(html);
-        return html;
-    },
-    clearView : function(name){
-        var tplObj = this._getTplObj(name);
-        tplObj.dom.html("");
-    },
-    append:function (name, data) {
-        var tplObj = this._getTplObj(name);
-        var html = this.toHtml(tplObj.tpl, data);
-        tplObj.dom.innerHTML+=html;
-        return html;
-    }
-}
-*/

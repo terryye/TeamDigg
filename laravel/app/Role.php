@@ -15,8 +15,8 @@ class Role {
     const PRIV_UPDATE = 11002;
     const PRIV_REMOVE = 11003;
     const PRIV_SUBSCRIBE = 11004;
-    const PRIV_SET_MANAGER = 11004;
-    const PRIV_MANAGE_MEMBER = 11004;
+    const PRIV_SET_MANAGER = 11005;
+    const PRIV_MANAGE_MEMBER = 11006;
 
     public static function checkPrivilege($roleId, $privilegeId){
         $privMap = [

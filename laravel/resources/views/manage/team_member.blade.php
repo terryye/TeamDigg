@@ -73,10 +73,23 @@
             </nav>
         </div>
     </div>
+    <script type="text/javascript" src="{{asset('./js/common.js')}}"></script>
     <script>
-        function setRole(team_id, uid, roleid){
-            CGI.post({{route("manage.team.role", [])}})
-            console.log(team_id,uid,roleid);
+        function setRole(team_id, user_id, role_id){
+            CGI.post('{{route("manage.team.role", ['team_id'=>$team->team_id])}}' , {'user_id':user_id, 'role_id':role_id}, function(respond){
+                if(respond.code === 0){
+                    //todo:将对应的用户角色修改为对应的名称
+
+
+                }else{
+                    alert(respond.message);
+                }
+
+            });
+
+
+
+
             return false;
         }
     </script>
